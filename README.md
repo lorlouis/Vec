@@ -16,9 +16,9 @@
 
 ARRAYLIST(dal, double); // define a struct named dal
 
-ARRAYLIST_PROTYPE(dal, double); // defines the functions for dal
+ARRAYLIST_FUNCTIONS(dal, double); // defines the functions for dal
 
-int main(int argc, const char \*\*argv) {
+int main(int argc, const char **argv) {
     struct dal *cal = dal_new(2); // create an AL with a capacity of 2 elements
 
     dal_add(cal, 1);

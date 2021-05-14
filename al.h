@@ -15,7 +15,7 @@ struct name { \
 };
 
 /* defines the function prototypes for the arraylist */
-#define ARRAYLIST_PROTYPE(name, type)\
+#define ARRAYLIST_FUNCTIONS(name, type)\
 struct name* name##_new(unsigned int initial_capacity) { \
     type *data = calloc(initial_capacity, sizeof(type)); \
     if(data == 0) return 0; \
@@ -69,4 +69,20 @@ int name##_remove(struct name * restrict const al, int index) { \
     return 1; \
 }
 
+
+/* defines the function prototypes for the arraylist */
+#define ARRAYLIST_PROTYPE(name, type)\
+struct name* name##_new(unsigned int initial_capacity); \
+/* frees the arraylist */ \
+void name##_free(struct name *al); \
+/* gets the value at `index` */ \
+type name##_get(struct name *al, int index); \
+/* sets the value at `index` to data
+ * UB if `index` > al->capacity */ \
+type name##_set(struct name* const al, int index, type data); \
+/* returns 1 if it was successful 0 otherwise */ \
+int name##_add(struct name * restrict const al, type data); \
+/* removed the element at `index` by shifting to
+ * the left every element after index by one */ \
+int name##_remove(struct name * restrict const al, int index);
 #endif
