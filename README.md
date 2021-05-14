@@ -12,8 +12,6 @@
 ## How to use
 
 ```c
-#include <stdio.h>
-
 #include "al.h"
 
 ARRAYLIST(dal, double); // define a struct named dal
