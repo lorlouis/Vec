@@ -2,33 +2,57 @@
 
 ## includes
 
-* \_new(initial\_capacity)
-* \_add(\*arraylist, data)
+* \_init(initial\_capacity)
+* \_free(\*arraylist)
 * \_get(\*arraylist, index)
+* \_add(\*arraylist, data)
 * \_set(\*arraylist, index, data)
 * \_remove(\*arraylist, index)
-* \_free(\*arraylist)
+* \_shrink(\*arraylist)
 
 ## How to use
 
 ```c
+#include <stdio.h>
+
+#include <assert.h>
+
 #include "al.h"
 
-ARRAYLIST(dal, double); // define a struct named dal
+ARRAYLIST(double_al, double);
 
-ARRAYLIST_FUNCTIONS(dal, double); // defines the functions for dal
+ARRAYLIST_FUNCTIONS(double_al, double);
 
 int main(int argc, const char **argv) {
-    struct dal *cal = dal_new(2); // create an AL with a capacity of 2 elements
+    struct double_al dal;
+    /* initialise the list with an initial capacity of 2 */
+    double_al_init(&dal, 2);
+    /* add elements to the list */
+    double_al_add(&dal, 42.0f);
+    double_al_add(&dal, 24.0f);
+    /* get the number of elements in the list */
+    assert(double_al_len(&dal) == 2);
 
-    dal_add(cal, 1);
-    dal_add(cal, 2);
-    dal_add(cal, 3); // doubles the size of the array
-    dal_remove(cal, 1); // shifts the elements after index to the left
-                        // effectively erasing the element at index
+    /* access the elements in the list */
+    assert(double_al_get(&dal, 1) == 24.0f);
+    assert(double_al_get(&dal, 0) == 42.0f);
 
-    dal_free(cal); // cleanup
+    /* will resizes to a capacity of 4 */
+    double_al_add(&dal, 88.0f);
+    assert(double_al_len(&dal) == 3);
+    assert(double_al_get(&dal, 2) == 88.0f);
 
-    return 0;
+    /* set the value at index 1 to 77 */
+    double_al_set(&dal, 1, 77.0f);
+    assert(double_al_get(&dal, 1) == 77.0f);
+
+    /* remove index 1 */
+    assert(double_al_remove(&dal, 1) == 77.0f);
+
+    /* shrink the capacity to 3 */
+    double_al_shrink(&dal);
+
+    /* cleanup */
+    double_al_free(&dal);
 }
 ```

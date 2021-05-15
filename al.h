@@ -9,38 +9,37 @@
 /* defines a struct arraylist of name `name` that holds `type` */
 #define ARRAYLIST(name, type)\
 struct name { \
+    /* number of elems in list */ \
     size_t len; \
+    /* capacity in number of elems */ \
     size_t capacity; \
     type *data; \
-};
+}
 
 /* defines the function prototypes for the arraylist */
 #define ARRAYLIST_FUNCTIONS(name, type)\
-struct name* name##_new(unsigned int initial_capacity) { \
+size_t name##_len(struct name * const al) { \
+    return al->len; \
+} \
+/* mallocs ArrayList.data */ \
+int name##_init(struct name * const al, unsigned int initial_capacity) { \
     type *data = calloc(initial_capacity, sizeof(type)); \
     if(data == 0) return 0; \
-    struct name* al = calloc(sizeof(struct name), 1); \
-    if(al == 0) return 0; \
+    al->len = 0; \
     al->capacity = initial_capacity; \
     al->data = data; \
-    return al; \
+    return 1; \
 } \
 /* frees the arraylist */ \
-void name##_free(struct name *al) { \
+void name##_free(struct name * const al) { \
     free(al->data);\
-    free(al);\
 }\
 /* gets the value at `index` */ \
-type name##_get(struct name *al, int index) { \
+type name##_get(struct name * const al, int index) { \
     return al->data[index]; \
 } \
-/* sets the value at `index` to data
- * UB if `index` > al->capacity */ \
-type name##_set(struct name* const al, int index, type data) { \
-    return al->data[index] = data; \
-} \
 /* returns 1 if it was successful 0 otherwise */ \
-int name##_add(struct name * restrict const al, type data) { \
+int name##_add(struct name * const al, type data) { \
     /* realloc if the array is full */ \
     if(al->len >= al->capacity) { \
         if(((SIZE_MAX / sizeof(data)) / 2) < al->capacity) return 0; \
@@ -54,35 +53,57 @@ int name##_add(struct name * restrict const al, type data) { \
     al->len++; \
     return 1; \
 } \
+/* sets the value at `index` to data
+ * fails if index > len */ \
+int name##_set(struct name* const al, int index, type data) { \
+    if(index == al->len) { \
+        return name##_add(al, data); \
+    } \
+    else if(index > al->len) return 0; \
+    al->data[index] = data; \
+    return 1; \
+} \
 /* removed the element at `index` by shifting to
  * the left every element after index by one */ \
-int name##_remove(struct name * restrict const al, int index) { \
+type name##_remove(struct name * const al, int index) { \
+    type data = al->data[index]; \
     al->len--; \
     if(index == al->len) { \
         al->data[index] = 0; \
-        return 1; \
+        return data; \
     } \
-    size_t diff = (al->capacity -1) - index; \
-    /* TODO only shift up to len and not capacity for better performance */ \
-    memmove(al->data+index, al->data+index+1, diff); \
-    al->data[al->capacity-1] = 0; \
+    memmove(al->data+index, al->data+index+1, (al->len - index)*sizeof(type));\
+    al->data[al->len] = 0; \
+    return data; \
+} \
+/* shrinks the capacity of the list to fit the number of elems present */ \
+int name##_shrink(struct name * const al) { \
+    type *ret = realloc(al->data, al->len * sizeof(type)); \
+    if(ret == 0) return 0; \
+    al->capacity = al->len; \
+    al->data = ret; \
     return 1; \
 }
 
-
 /* defines the function prototypes for the arraylist */
-#define ARRAYLIST_PROTYPE(name, type)\
-struct name* name##_new(unsigned int initial_capacity); \
-/* frees the arraylist */ \
-void name##_free(struct name *al); \
+#define ARRAYLIST_PROTYPE(name, type) \
+size_t name##_len(struct name * const al); \
+/* mallocs al.data */ \
+int name##_init(struct name * const al, unsigned int initial_capacity); \
+/* frees the arraylist's data */ \
+void name##_free(struct name * const al); \
 /* gets the value at `index` */ \
-type name##_get(struct name *al, int index); \
-/* sets the value at `index` to data
- * UB if `index` > al->capacity */ \
-type name##_set(struct name* const al, int index, type data); \
+type name##_get(struct name * const al, int index); \
 /* returns 1 if it was successful 0 otherwise */ \
-int name##_add(struct name * restrict const al, type data); \
+int name##_add(struct name * const al, type data); \
+/* sets the value at `index` to data
+ * fails if index > len */ \
+int name##_set(struct name * const al, int index, type data); \
 /* removed the element at `index` by shifting to
- * the left every element after index by one */ \
-int name##_remove(struct name * restrict const al, int index);
+ * the left every element after index by one
+ * returns the removed element */ \
+type name##_remove(struct name * const al, int index); \
+/* shrinks the capacity of the list to fit the number of elems present */ \
+int name##_shrink(struct name * const al)
+
 #endif
