@@ -2,6 +2,7 @@
 
 ## includes
 
+* \_len(\*arraylist)
 * \_init(initial\_capacity)
 * \_free(\*arraylist)
 * \_get(\*arraylist, index)
