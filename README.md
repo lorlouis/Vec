@@ -49,7 +49,9 @@ int main(int argc, const char **argv) {
     /* remove index 1 */
     assert(double_al_remove(&dal, 1) == 77.0f);
 
-    /* shrink the capacity to 3 */
+    assert(double_al_len(&dal) == 2);
+
+    /* shrink the capacity to 2 */
     double_al_shrink(&dal);
 
     /* cleanup */
