@@ -6,6 +6,7 @@
 * \_init(initial\_capacity)
 * \_free(\*arraylist)
 * \_get(\*arraylist, index)
+* \_getref(\*arraylist, index)
 * \_add(\*arraylist, data)
 * \_set(\*arraylist, index, data)
 * \_remove(\*arraylist, index)
