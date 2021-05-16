@@ -38,12 +38,16 @@ void name##_free(struct name * const al) { \
 type name##_get(struct name * const al, int index) { \
     return al->data[index]; \
 } \
+/* gets a pointer to value at `index` */ \
+type* name##_getref(struct name * const al, int index) { \
+    return al->data+index; \
+} \
 /* returns 1 if it was successful 0 otherwise */ \
 int name##_add(struct name * const al, type data) { \
     /* realloc if the array is full */ \
     if(al->len >= al->capacity) { \
         if(((SIZE_MAX / sizeof(data)) / 2) < al->capacity) return 0; \
-        void *new_data = realloc(al->data, (al->capacity*2) * sizeof(data)); \
+        type *new_data = realloc(al->data, (al->capacity*2) * sizeof(data)); \
         /* failed to alloc memory */ \
         if(new_data == 0) return 0; \
         al->capacity *=2; \
@@ -69,11 +73,9 @@ type name##_remove(struct name * const al, int index) { \
     type data = al->data[index]; \
     al->len--; \
     if(index == al->len) { \
-        al->data[index] = 0; \
         return data; \
     } \
     memmove(al->data+index, al->data+index+1, (al->len - index)*sizeof(type));\
-    al->data[al->len] = 0; \
     return data; \
 } \
 /* shrinks the capacity of the list to fit the number of elems present */ \
@@ -94,6 +96,8 @@ int name##_init(struct name * const al, unsigned int initial_capacity); \
 void name##_free(struct name * const al); \
 /* gets the value at `index` */ \
 type name##_get(struct name * const al, int index); \
+/* gets a pointer to value at `index` */ \
+type* name##_getref(struct name * const al, int index); \
 /* returns 1 if it was successful 0 otherwise */ \
 int name##_add(struct name * const al, type data); \
 /* sets the value at `index` to data
