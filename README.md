@@ -6,11 +6,13 @@
 * \_init(initial\_capacity)
 * \_free(\*arraylist)
 * \_get(\*arraylist, index)
-* \_getref(\*arraylist, index)
+* \_getref(\*arraylist, index) \*
 * \_add(\*arraylist, data)
 * \_set(\*arraylist, index, data)
 * \_remove(\*arraylist, index)
 * \_shrink(\*arraylist)
+
+\* using getref is discouraged as the pointer might go stale when the arraylist is resized
 
 ## How to use
 
