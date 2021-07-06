@@ -12,7 +12,7 @@
 * \_remove(\*arraylist, index)
 * \_shrink(\*arraylist)
 
-\* using getref is discouraged as the pointer might go stale when the arraylist is resized
+\* storing the result of getref is discouraged as the pointer can go stale when the arraylist is resized
 
 ## How to use
 
