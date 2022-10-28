@@ -107,11 +107,38 @@ void int_shrink_test(void) {
     struct int_vec intv = {0};
     int_vec_init(&intv, 0, 0);
     int_vec_push(&intv, 42);
-    ASSERT(intv.len != 1);
+    ASSERT(intv.len == 1);
     ASSERT(intv.capacity != 1);
     ASSERT(int_vec_shrink(&intv) == 0);
     ASSERT(intv.len == 1);
     ASSERT(intv.capacity == 1);
+cleanup:
+    int_vec_cleanup(&intv);
+}
+
+/* make sure poped values are freed if `buf` is null and
+ * the cleanup function is not null */
+void int_pop_free_test(void) {
+    struct int_vec intv = {0};
+    test_cleanup_called = 0;
+    int_vec_init(&intv, 0, test_cleanup);
+    int_vec_push(&intv, 42);
+    int_vec_pop(&intv, 0);
+    ASSERT(test_cleanup_called == 1);
+cleanup:
+    int_vec_cleanup(&intv);
+}
+
+/* make sure removed values are freed if `buf` is null and
+ * the cleanup function is not null */
+void int_remove_free_test(void) {
+    struct int_vec intv = {0};
+    test_cleanup_called = 0;
+    int_vec_init(&intv, 0, test_cleanup);
+    int_vec_push(&intv, 42);
+    int_vec_push(&intv, 24);
+    int_vec_remove(&intv, 0, 0);
+    ASSERT(test_cleanup_called == 1);
 cleanup:
     int_vec_cleanup(&intv);
 }

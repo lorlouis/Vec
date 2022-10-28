@@ -1,64 +1,64 @@
-# al.h A generic arraylist using the C preprocessor
+# vec.h A generic vector using the C preprocessor
 
 ## includes
 
-* \_len(\*arraylist)
+* \_len(\*vec)
 * \_init(initial\_capacity)
-* \_free(\*arraylist)
-* \_get(\*arraylist, index)
-* \_getref(\*arraylist, index) \*
-* \_add(\*arraylist, data)
-* \_set(\*arraylist, index, data)
-* \_remove(\*arraylist, index)
-* \_shrink(\*arraylist)
-
-\* storing the result of getref is discouraged as the pointer can go stale when the arraylist is resized
+* \_cleanup(\*vec)
+* \_get(\*vec, index)
+* \_push(\*vec, data)
+* \_pop(\*vec, index, \*buf)
+* \_remove(\*vec, index, \*buf)
+* \_shrink(\*vec)
 
 ## How to use
 
 ```c
-#include <stdio.h>
-
 #include <assert.h>
 
-#include "al.h"
+#include "vec.h"
 
-ARRAYLIST(double_al, double);
+VEC(vecd, double);
 
-ARRAYLIST_FUNCTIONS(double_al, double);
+VEC_FUNCTIONS(vecd, double);
 
 int main(int argc, const char **argv) {
-    struct double_al dal;
-    /* initialise the list with an initial capacity of 2 */
-    double_al_init(&dal, 2);
+    struct vecd vecd;
+    /* initialise the list with an initial capacity of 2
+     * 0 because doubles do not have a special free method*/
+    vecd_init(&vecd, 2, 0);
     /* add elements to the list */
-    double_al_add(&dal, 42.0f);
-    double_al_add(&dal, 24.0f);
+    vecd_push(&vecd, 42.0f);
+    vecd_push(&vecd, 24.0f);
     /* get the number of elements in the list */
-    assert(double_al_len(&dal) == 2);
+    assert(vecd_len(&vecd) == 2);
+    /* or */
+    assert(vecd.len == 2);
 
     /* access the elements in the list */
-    assert(double_al_get(&dal, 1) == 24.0f);
-    assert(double_al_get(&dal, 0) == 42.0f);
+    assert(*vecd_get(&vecd, 1) == 24.0f);
+    assert(*vecd_get(&vecd, 0) == 42.0f);
 
     /* will resizes to a capacity of 4 */
-    double_al_add(&dal, 88.0f);
-    assert(double_al_len(&dal) == 3);
-    assert(double_al_get(&dal, 2) == 88.0f);
+    vecd_push(&vecd, 88.0f);
+    assert(vecd_len(&vecd) == 3);
+    assert(*vecd_get(&vecd, 2) == 88.0f);
 
     /* set the value at index 1 to 77 */
-    double_al_set(&dal, 1, 77.0f);
-    assert(double_al_get(&dal, 1) == 77.0f);
+    vecd.data[1] = 77.0f;
+    assert(*vecd_get(&vecd, 1) == 77.0f);
 
     /* remove index 1 */
-    assert(double_al_remove(&dal, 1) == 77.0f);
+    double buf = 0;
+    vecd_remove(&vecd, 1, &buf);
+    assert(buf == 77.0f);
 
-    assert(double_al_len(&dal) == 2);
+    assert(vecd_len(&vecd) == 2);
 
     /* shrink the capacity to 2 */
-    double_al_shrink(&dal);
+    vecd_shrink(&vecd);
 
     /* cleanup */
-    double_al_free(&dal);
+    vecd_cleanup(&vecd);
 }
 ```

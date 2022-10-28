@@ -78,6 +78,9 @@ int name##_pop(struct name * const vec, type *buf) { \
     if(buf) { \
         memcpy(buf, &vec->data[vec->len-1], sizeof(type)); \
     } \
+    else if(vec->cleanup_fn) { \
+        vec->cleanup_fn(&vec->data[vec->len-1]); \
+    } \
     vec->len -= 1; \
     return 0; \
 } \
@@ -90,7 +93,9 @@ int name##_remove(struct name * const vec, int index, type *buf) { \
     if(buf) { \
         memcpy(buf, vec->data + index, sizeof(type)); \
     } \
-    type data = vec->data[index]; \
+    else if(vec->cleanup_fn) { \
+        vec->cleanup_fn(vec->data + index); \
+    } \
     vec->len--; \
     memmove(vec->data+index, vec->data+index+1, (vec->len - index)*sizeof(type));\
     return 0; \

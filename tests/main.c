@@ -48,6 +48,8 @@ int main(int argc, const char **argv) {
     RUN_TEST(int_pop_test);
     RUN_TEST(int_remove_test);
     RUN_TEST(int_shrink_test);
+    RUN_TEST(int_pop_free_test);
+    RUN_TEST(int_remove_free_test);
 
     /* END OF TESTS */
     printf("REPORT:\n\tfailed: %d\tpassed: %d\n", failed, TOTAL_TESTS-failed);
