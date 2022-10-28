@@ -15,15 +15,15 @@ static int run_test(void (*fn)(void), char *name) {
     fn();
     /* allow for passing tests to be ignore with 1>/dev/null */
     if(test_failed_data.assertion) {
-        fprintf(stderr, "running %s: ", name);
+        fprintf(stderr, "running %-32s ", name);
         fprintf(stderr,
-                "\t[FAIL]\n\t\t%s:%d `(%s) != true`\n",
+                "[FAIL]\n\t\t%s:%d `(%s) != true`\n",
                 test_failed_data.file,
                 test_failed_data.line,
                 test_failed_data.assertion);
         return 1;
     }
-    printf("running %s: \t[OK]\n", name);
+    printf("running %-32s %s\n", name, "[ OK ]");
     return 0;
 }
 
@@ -44,6 +44,10 @@ int main(int argc, const char **argv) {
     /* ADD TESTS HERE */
     RUN_TEST(int_push_test);
     RUN_TEST(int_init_test);
+    RUN_TEST(int_get_test);
+    RUN_TEST(int_pop_test);
+    RUN_TEST(int_remove_test);
+    RUN_TEST(int_shrink_test);
 
     /* END OF TESTS */
     printf("REPORT:\n\tfailed: %d\tpassed: %d\n", failed, TOTAL_TESTS-failed);

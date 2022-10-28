@@ -27,8 +27,8 @@ int name##_init(struct name * const vec, unsigned int initial_capacity, void (*c
     type *data = 0; \
     if(initial_capacity) { \
         data = calloc(initial_capacity, sizeof(type)); \
+        if(data == 0) return 0; \
     } \
-    if(data == 0) return 0; \
     vec->len = 0; \
     vec->capacity = initial_capacity; \
     vec->data = data; \
@@ -47,15 +47,12 @@ void name##_cleanup(struct name * const vec) { \
     vec->len = 0; \
     vec->capacity = 0; \
 }\
-/* gets the value at `index` */ \
-type name##_get(struct name * const vec, int index) { \
-    return vec->data[index]; \
+/* gets a pointer to value at `index` if it exists */ \
+type* name##_get(struct name * const vec, int index) { \
+    if(index >= vec->len) return 0; \
+    return vec->data + index; \
 } \
-/* gets a pointer to value at `index` */ \
-type* name##_getref(struct name * const vec, int index) { \
-    return vec->data+index; \
-} \
-/* returns 1 if it was successful 0 otherwise */ \
+/* returns 0 if it was successful -1 otherwise */ \
 int name##_push(struct name * const vec, type data) { \
     /* realloc if the array is full */ \
     if(vec->len >= vec->capacity) { \
@@ -66,35 +63,48 @@ int name##_push(struct name * const vec, type data) { \
         } \
         type *new_data = realloc(vec->data,  new_cap * sizeof(data)); \
         /* failed to vecloc memory */ \
-        if(new_data == 0) return 0; \
+        if(new_data == 0) return -1; \
         vec->capacity = new_cap; \
         vec->data = new_data; \
     } \
     vec->data[vec->len] = data; \
     vec->len++; \
-    return 1; \
+    return 0; \
+} \
+/* Removes the last value in the vec and copies it into `buf` if `buf` is not 0
+ * Return -1 if vec is of len 0, 1 otherwise */ \
+int name##_pop(struct name * const vec, type *buf) { \
+    if(vec->len == 0) return -1; \
+    if(buf) { \
+        memcpy(buf, &vec->data[vec->len-1], sizeof(type)); \
+    } \
+    vec->len -= 1; \
+    return 0; \
 } \
 /* removed the element at `index` by shifting to
  * the left every element after index by one */ \
-type name##_remove(struct name * const vec, int index) { \
+int name##_remove(struct name * const vec, int index, type *buf) { \
+    if(vec->len <= index || vec->len == 0) { \
+        return -1; \
+    } \
+    if(buf) { \
+        memcpy(buf, vec->data + index, sizeof(type)); \
+    } \
     type data = vec->data[index]; \
     vec->len--; \
-    if(index == vec->len) { \
-        return data; \
-    } \
     memmove(vec->data+index, vec->data+index+1, (vec->len - index)*sizeof(type));\
-    return data; \
+    return 0; \
 } \
-/* shrinks the capacity of the list to fit the number of elems present */ \
+/* shrinks the capacity of the vec to it's current length */ \
 int name##_shrink(struct name * const vec) { \
     if(vec->capacity == vec->len) { \
-        return 1; \
+        return 0; \
     } \
     type *ret = realloc(vec->data, vec->len * sizeof(type)); \
-    if(ret == 0) return 0; \
+    if(ret == 0) return -1; \
     vec->capacity = vec->len; \
     vec->data = ret; \
-    return 1; \
+    return 0; \
 }
 
 /* defines the function prototypes for the vec */
@@ -104,17 +114,18 @@ size_t name##_len(struct name * const vec); \
 int name##_init(struct name * const vec, unsigned int initial_capacity, void (*cleanup_fn)(type*)); \
 /* frees the vec's data */ \
 void name##_cleanup(struct name * const vec); \
-/* gets the value at `index` */ \
+/* returns a pointer to the value at index or 0 */ \
 type name##_get(struct name * const vec, int index); \
-/* gets a pointer to value at `index` */ \
-type* name##_getref(struct name * const vec, int index); \
-/* returns 1 if it was successful 0 otherwise */ \
+/* returns 0 if it was successful -1 otherwise */ \
 int name##_push(struct name * const vec, type data); \
+/* Removes the last value in the vec and copies it into `buf` if `buf` is not 0
+ * Return -1 if vec is of len 0, 1 otherwise */ \
+int name##_pop(struct name * const vec, type *buf); \
 /* removed the element at `index` by shifting to
  * the left every element after index by one
- * returns the removed element */ \
-type name##_remove(struct name * const vec, int index); \
-/* shrinks the capacity of the list to fit the number of elems present */ \
+ * copies the value removed into `buf` if it is not 0 */ \
+int name##_remove(struct name * const vec, int index, type *buf); \
+/* shrinks the capacity of the vec to it's current length */ \
 int name##_shrink(struct name * const vec)
 
 #endif
