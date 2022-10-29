@@ -120,7 +120,7 @@ int name##_init(struct name * const vec, unsigned int initial_capacity, void (*c
 /* frees the vec's data */ \
 void name##_cleanup(struct name * const vec); \
 /* returns a pointer to the value at index or 0 */ \
-type name##_get(struct name * const vec, int index); \
+type* name##_get(struct name * const vec, int index); \
 /* returns 0 if it was successful -1 otherwise */ \
 int name##_push(struct name * const vec, type data); \
 /* Removes the last value in the vec and copies it into `buf` if `buf` is not 0
