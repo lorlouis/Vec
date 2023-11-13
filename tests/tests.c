@@ -4,7 +4,6 @@
 VEC(int_vec, int);
 VEC_FUNCTIONS(int_vec, int);
 
-
 static int test_cleanup_called = 0;
 void test_cleanup(int *_i) {
     test_cleanup_called += 1;

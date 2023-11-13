@@ -1,7 +1,7 @@
 #ifndef TEST_ASSERT_H
 #define TEST_ASSERT_H 1
 
-struct {
+extern struct {
     int line;
     const char *func;
     const char *file;

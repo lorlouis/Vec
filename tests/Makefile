@@ -1,13 +1,16 @@
-SOURCE	= main.c
+SOURCE	= main.c test_assert.c
 HEADER	=
 SRC_DIR = .
 BUILD_DIR = build
-OUT	= a.out
+OUT	= tests
 CC	= gcc
 FLAGS	= --std=gnu17 -g -Wall
 LFLAGS	=
 
 OBJS = $(patsubst %.c,$(BUILD_DIR)/%.o,$(SOURCE))
+
+$(OUT): all
+	./$(OUT)
 
 all: $(OBJS)
 	$(CC) -o $(OUT) $^ $(LFLAGS)
